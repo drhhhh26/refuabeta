@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+    <meta http-equiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=()">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://script.google.com https://script.googleusercontent.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: https:; connect-src 'self' https://*.google.com https://*.googleusercontent.com https://script.google.com https://script.googleusercontent.com; frame-src https://drive.google.com;">
+
+    <title>ספרות מקצועית | מדור רפואה</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+
+    <style>
+        :root {
+            --orange-primary: #FF6B35;
+            --orange-bright: #FF8C42;
+            --orange-dark: #E85A24;
+            --orange-glow: rgba(255, 107, 53, 0.4);
+            --charcoal: #1a1d23;
+            --charcoal-light: #252931;
+            --charcoal-lighter: #2f343d;
+            --text-primary: #ffffff;
+            --text-secondary: #9ca3af;
+            --text-muted: #6b7280;
+            --border-subtle: rgba(255, 255, 255, 0.06);
+            --border-light: rgba(255, 255, 255, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: 'Heebo', sans-serif;
+            background: var(--charcoal);
+            min-height: 100vh;
+            direction: rtl;
+            overflow-x: hidden;
+            color: var(--text-primary);
+        }
+
+        .bg-image { position: fixed; inset: 0; background: url('Assets/background.JPEG') center center / cover no-repeat; z-index: 0; }
+        .bg-overlay { position: fixed; inset: 0; background: linear-gradient(180deg, rgba(26, 29, 35, 0.75) 0%, rgba(26, 29, 35, 0.65) 30%, rgba(26, 29, 35, 0.8) 70%, rgba(26, 29, 35, 0.95) 100%), linear-gradient(135deg, rgba(255, 107, 53, 0.08) 0%, transparent 50%); z-index: 1; }
+        .bg-vignette { position: fixed; inset: 0; background: radial-gradient(ellipse at center, transparent 40%, rgba(26, 29, 35, 0.6) 100%); z-index: 2; pointer-events: none; }
+
+        .main-container { position: relative; z-index: 10; min-height: 100vh; max-width: 500px; margin: 0 auto; }
+
+        .header {
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-subtle);
+            background: rgba(26, 29, 35, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-right { display: flex; align-items: center; gap: 12px; }
+
+        .back-btn {
+            width: 40px; height: 40px;
+            background: var(--charcoal-light);
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        .back-btn:hover { background: var(--charcoal-lighter); border-color: var(--orange-primary); color: var(--orange-primary); }
+
+        .page-title { font-size: 1.4rem; font-weight: 700; color: var(--text-primary); }
+
+        .header-logos { display: flex; align-items: center; gap: 12px; }
+        .header-logos img { height: 36px; width: auto; }
+
+        .content { padding: 24px 20px 40px; }
+
+        .loading-screen { text-align: center; padding: 60px 20px; }
+        .loading-spinner {
+            width: 50px; height: 50px;
+            border: 4px solid var(--charcoal-lighter);
+            border-top: 4px solid var(--orange-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        .loading-text { font-size: 1rem; color: var(--text-secondary); }
+
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            border: 2px solid rgba(239, 68, 68, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            color: #fca5a5;
+            text-align: center;
+        }
+
+        .documents-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+        }
+
+        .document-card {
+            background: var(--charcoal-light);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            padding: 20px 16px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            min-height: 140px;
+        }
+
+        .document-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--orange-primary), var(--orange-bright));
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.3s ease;
+        }
+
+        .document-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 107, 53, 0.3);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 107, 53, 0.1);
+        }
+
+        .document-card:hover::before { transform: scaleX(1); transform-origin: left; }
+        .document-card:active { transform: translateY(-2px) scale(0.98); }
+
+        .document-emoji { font-size: 2.5rem; margin-bottom: 12px; transition: all 0.3s ease; }
+        .document-card:hover .document-emoji { transform: scale(1.1); }
+
+        .document-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            line-height: 1.4;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.3s ease;
+        }
+
+        .document-card:hover .document-title { color: var(--orange-primary); }
+
+        .pdf-badge {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        @media (max-width: 400px) {
+            .header { padding: 16px 20px; }
+            .page-title { font-size: 1.2rem; }
+            .header-logos img { height: 32px; }
+            .content { padding: 20px 16px 32px; }
+            .documents-grid { gap: 12px; }
+            .document-card { padding: 16px 12px; min-height: 120px; }
+            .document-emoji { font-size: 2rem; }
+            .document-title { font-size: 0.85rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-image"></div>
+    <div class="bg-overlay"></div>
+    <div class="bg-vignette"></div>
+
+    <div class="main-container">
+        <header class="header">
+            <div class="header-right">
+                <button class="back-btn" onclick="goBack()">
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+                <h1 class="page-title">ספרות מקצועית</h1>
+            </div>
+            <div class="header-logos">
+                <img src="Assets/logo1.PNG" alt="Logo 1">
+                <img src="Assets/logo2.PNG" alt="Logo 2">
+            </div>
+        </header>
+
+        <div class="content">
+            <div id="loading-screen" class="loading-screen">
+                <div class="loading-spinner"></div>
+                <div class="loading-text">טוען מסמכים...</div>
+            </div>
+
+            <div id="error-screen" style="display: none;">
+                <div class="error-message">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">⚠️</div>
+                    <div id="error-text">שגיאה בטעינת המסמכים</div>
+                </div>
+            </div>
+
+            <div id="documents-grid" class="documents-grid" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        const DOCUMENTS_URL = 'https://script.google.com/macros/s/AKfycbxT3zOiv2zy1FylpNbP02VYusXe5Pqy9Pdz1iziF8103cnx37Tgzg_f1_-g7aQ0iBt3Ag/exec';
+
+        let documents = [];
+        let lastLoadTime = 0;
+        const RATE_LIMIT_MS = 2000;
+
+        function isValidUrl(url) {
+            if (!url || typeof url !== 'string') return false;
+            try {
+                const urlObj = new URL(url);
+                return urlObj.protocol === 'https:' &&
+                       (urlObj.hostname === 'drive.google.com' ||
+                        urlObj.hostname === 'script.google.com' ||
+                        urlObj.hostname === 'script.googleusercontent.com');
+            } catch (e) { return false; }
+        }
+
+        async function loadDocuments() {
+            const now = Date.now();
+            if (now - lastLoadTime < RATE_LIMIT_MS) return;
+            lastLoadTime = now;
+
+            try {
+                const response = await fetch(DOCUMENTS_URL);
+                if (!response.ok) throw new Error(`שגיאת שרת: ${response.status}`);
+
+                const data = await response.json();
+                if (!data.success) throw new Error(data.error || 'שגיאה בטעינת נתונים');
+
+                documents = (data.documents || [])
+                    .filter(d => d.title && d.title.trim() !== '' && d.url)
+                    .filter(d => isValidUrl(d.url))
+                    .map(d => ({
+                        title: String(d.title).substring(0, 150),
+                        emoji: String(d.emoji || '📄').substring(0, 10),
+                        url: d.url
+                    }));
+
+                if (documents.length === 0) throw new Error('לא נמצאו מסמכים תקינים');
+
+                displayDocuments();
+            } catch (error) {
+                console.error('שגיאה:', error);
+                showError('לא ניתן לטעון את המסמכים כרגע. אנא נסה שוב מאוחר יותר.');
+            }
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = String(text);
+            return div.innerHTML;
+        }
+
+        function displayDocuments() {
+            const container = document.getElementById('documents-grid');
+            container.innerHTML = '';
+
+            documents.forEach((doc, index) => {
+                const docCard = document.createElement('div');
+                docCard.className = 'document-card';
+                docCard.style.animationDelay = `${0.1 + index * 0.05}s`;
+                docCard.style.animation = 'fadeSlideUp 0.5s ease-out backwards';
+
+                docCard.innerHTML = `
+                    <span class="pdf-badge">PDF</span>
+                    <span class="document-emoji">${doc.emoji || '📄'}</span>
+                    <div class="document-title">${escapeHtml(doc.title)}</div>
+                `;
+
+                docCard.onclick = function() { openDocument(doc.url); };
+                container.appendChild(docCard);
+            });
+
+            document.getElementById('loading-screen').style.display = 'none';
+            document.getElementById('documents-grid').style.display = 'grid';
+        }
+
+        function showError(message) {
+            document.getElementById('loading-screen').style.display = 'none';
+            document.getElementById('error-screen').style.display = 'block';
+            document.getElementById('error-text').textContent = message;
+        }
+
+        function openDocument(url) {
+            if (!isValidUrl(url)) { alert('קישור לא תקין'); return; }
+            const newWindow = window.open(url, '_blank', 'noopener,noreferrer');
+            if (newWindow) newWindow.opener = null;
+        }
+
+        function goBack() {
+            if (window.history.length > 1) window.history.back();
+            else window.location.href = './index.html';
+        }
+
+        function goHome() { window.location.href = './index.html'; }
+
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function(e) {
+            const now = Date.now();
+            if (now - lastTouchEnd <= 300) e.preventDefault();
+            lastTouchEnd = now;
+        }, false);
+
+        window.addEventListener('load', loadDocuments);
+    </script>
+</body>
+</html>
