@@ -185,6 +185,58 @@
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(26, 29, 35, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border-subtle);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 8px 0;
+            padding-bottom: calc(8px + env(safe-area-inset-bottom));
+            z-index: 1000;
+        }
+
+        .bottom-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 12px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.7rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+            min-width: 60px;
+        }
+
+        .bottom-nav-item i { font-size: 1.25rem; transition: all 0.3s ease; }
+        .bottom-nav-item.active { color: var(--orange-primary); }
+        .bottom-nav-item.active i { transform: scale(1.1); }
+        .bottom-nav-item.active::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 24px;
+            height: 3px;
+            background: var(--orange-primary);
+            border-radius: 0 0 3px 3px;
+        }
+        .bottom-nav-item:not(.active):hover { color: var(--text-secondary); }
+        .bottom-nav-item:not(.active):active { color: var(--orange-primary); transform: scale(0.95); }
+
+        .main-container { padding-bottom: 80px; }
+
         @media (max-width: 400px) {
             .header { padding: 16px 20px; }
             .page-title { font-size: 1.2rem; }
@@ -298,11 +350,22 @@
                 docCard.style.animationDelay = `${0.1 + index * 0.05}s`;
                 docCard.style.animation = 'fadeSlideUp 0.5s ease-out backwards';
 
-                docCard.innerHTML = `
-                    <span class="pdf-badge">PDF</span>
-                    <span class="document-emoji">${doc.emoji || '🚨'}</span>
-                    <div class="document-title">${escapeHtml(doc.title)}</div>
-                `;
+                // Build document card safely using DOM methods to prevent XSS
+                const pdfBadge = document.createElement('span');
+                pdfBadge.className = 'pdf-badge';
+                pdfBadge.textContent = 'PDF';
+
+                const emojiSpan = document.createElement('span');
+                emojiSpan.className = 'document-emoji';
+                emojiSpan.textContent = doc.emoji || '🚨';
+
+                const titleDiv = document.createElement('div');
+                titleDiv.className = 'document-title';
+                titleDiv.textContent = doc.title;
+
+                docCard.appendChild(pdfBadge);
+                docCard.appendChild(emojiSpan);
+                docCard.appendChild(titleDiv);
 
                 docCard.onclick = function() { openDocument(doc.url); };
                 container.appendChild(docCard);
@@ -340,5 +403,29 @@
 
         window.addEventListener('load', loadDocuments);
     </script>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a href="index.html" class="bottom-nav-item">
+            <i class="fas fa-home"></i>
+            <span>בית</span>
+        </a>
+        <a href="lomdot2-page.html" class="bottom-nav-item">
+            <i class="fas fa-graduation-cap"></i>
+            <span>לומדות</span>
+        </a>
+        <a href="exams.html" class="bottom-nav-item">
+            <i class="fas fa-file-alt"></i>
+            <span>בחנים</span>
+        </a>
+        <a href="safrot-page.html" class="bottom-nav-item">
+            <i class="fas fa-book"></i>
+            <span>ספרות</span>
+        </a>
+        <a href="lessons-learned.html" class="bottom-nav-item active">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>לקחים</span>
+        </a>
+    </nav>
 </body>
 </html>
