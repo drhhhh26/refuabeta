@@ -6,164 +6,212 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
 
-    <!-- Security Headers -->
     <meta http-equiv="X-Frame-Options" content="DENY">
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
     <meta http-equiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=()">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://script.google.com https://script.googleusercontent.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://script.google.com https://script.googleusercontent.com; media-src 'self' data:;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://script.google.com https://script.googleusercontent.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: https:; connect-src 'self' https://script.google.com https://script.googleusercontent.com; media-src 'self' data:;">
 
-    <title>מאגר שאלות - מדור רפואה</title>
+    <title>מאגר שאלות | מדור רפואה</title>
 
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
-    <!-- Shared Styles -->
-    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
 
     <style>
+        :root {
+            --orange-primary: #FF6B35;
+            --orange-bright: #FF8C42;
+            --orange-dark: #E85A24;
+            --orange-glow: rgba(255, 107, 53, 0.4);
+            --charcoal: #1a1d23;
+            --charcoal-light: #252931;
+            --charcoal-lighter: #2f343d;
+            --text-primary: #ffffff;
+            --text-secondary: #9ca3af;
+            --text-muted: #6b7280;
+            --border-subtle: rgba(255, 255, 255, 0.06);
+            --border-light: rgba(255, 255, 255, 0.1);
+            --success: #10b981;
+            --error: #ef4444;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
         body {
-            background: linear-gradient(135deg, #ff9a56 0%, #ff6b6b 100%);
+            font-family: 'Heebo', sans-serif;
+            background: var(--charcoal);
             min-height: 100vh;
+            direction: rtl;
+            overflow-x: hidden;
+            color: var(--text-primary);
+        }
+
+        .bg-image { position: fixed; inset: 0; background: url('Assets/background.JPEG') center center / cover no-repeat; z-index: 0; }
+        .bg-overlay { position: fixed; inset: 0; background: linear-gradient(180deg, rgba(26, 29, 35, 0.75) 0%, rgba(26, 29, 35, 0.65) 30%, rgba(26, 29, 35, 0.8) 70%, rgba(26, 29, 35, 0.95) 100%), linear-gradient(135deg, rgba(255, 107, 53, 0.08) 0%, transparent 50%); z-index: 1; }
+        .bg-vignette { position: fixed; inset: 0; background: radial-gradient(ellipse at center, transparent 40%, rgba(26, 29, 35, 0.6) 100%); z-index: 2; pointer-events: none; }
+
+        .main-container { position: relative; z-index: 10; min-height: 100vh; max-width: 700px; margin: 0 auto; }
+
+        .header {
+            padding: 20px 24px;
             display: flex;
             align-items: center;
-            justify-content: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-subtle);
+            background: rgba(26, 29, 35, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-right { display: flex; align-items: center; gap: 12px; }
+
+        .back-btn {
+            width: 40px; height: 40px;
+            background: var(--charcoal-light);
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        .back-btn:hover { background: var(--charcoal-lighter); border-color: var(--orange-primary); color: var(--orange-primary); }
+
+        .page-title { font-size: 1.4rem; font-weight: 700; color: var(--text-primary); }
+
+        .header-logos { display: flex; align-items: center; gap: 12px; }
+        .header-logos img { height: 36px; width: auto; }
+
+        .content { padding: 24px 20px 120px; }
+
+        /* Progress Bar */
+        .progress-section {
+            background: var(--charcoal-light);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
             padding: 20px;
+            margin-bottom: 20px;
         }
 
-        .quiz-container {
-            max-width: 700px;
-            width: 100%;
-            background: white;
-            border-radius: 24px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            overflow: hidden;
-            animation: slideIn 0.5s ease-out;
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
         }
 
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .progress-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
         }
 
-        /* Header */
-        .quiz-header {
-            background: linear-gradient(135deg, #ff9a56 0%, #ff6b6b 100%);
-            padding: 25px 30px;
-            color: white;
-            text-align: center;
-        }
-
-        .quiz-title {
-            font-size: 1.8em;
-            font-weight: 700;
-            margin-bottom: 10px;
+        .progress-text {
+            font-size: 0.9rem;
+            color: var(--orange-primary);
+            font-weight: 600;
         }
 
         .progress-container {
-            background: rgba(255, 255, 255, 0.2);
+            background: var(--charcoal-lighter);
             border-radius: 50px;
             height: 10px;
             overflow: hidden;
-            margin-top: 15px;
         }
 
         .progress-bar {
             height: 100%;
-            background: linear-gradient(90deg, #48ff00 0%, #00ffd5 100%);
+            background: linear-gradient(90deg, var(--orange-primary), var(--orange-bright));
             border-radius: 50px;
             transition: width 0.5s ease;
-            box-shadow: 0 0 20px rgba(72, 255, 0, 0.5);
+            box-shadow: 0 0 15px var(--orange-glow);
         }
 
-        .progress-text {
-            margin-top: 8px;
-            font-size: 0.9em;
-            opacity: 0.95;
-        }
-
-        /* Question */
+        /* Question Card */
         .question-container {
-            padding: 40px 30px;
+            background: var(--charcoal-light);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            animation: fadeSlideUp 0.5s ease-out;
         }
 
         .question-number {
-            color: #ff9a56;
+            color: var(--orange-primary);
             font-weight: 700;
-            font-size: 0.9em;
-            margin-bottom: 15px;
+            font-size: 0.85rem;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .question-text {
-            font-size: 1.4em;
+            font-size: 1.2rem;
             font-weight: 600;
-            color: #2d3748;
-            line-height: 1.5;
-            margin-bottom: 30px;
+            color: var(--text-primary);
+            line-height: 1.6;
+            margin-bottom: 24px;
         }
 
         /* Answers */
-        .answers-grid {
-            display: grid;
-            gap: 15px;
-        }
+        .answers-grid { display: grid; gap: 12px; }
 
         .answer-btn {
-            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
-            border: 3px solid transparent;
-            border-radius: 16px;
-            padding: 20px 25px;
-            font-size: 1.1em;
-            font-weight: 600;
-            color: #2d3748;
+            background: var(--charcoal-lighter);
+            border: 2px solid var(--border-light);
+            border-radius: 12px;
+            padding: 16px 20px;
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-primary);
             cursor: pointer;
             transition: all 0.3s ease;
             text-align: right;
             position: relative;
             overflow: hidden;
+            font-family: 'Heebo', sans-serif;
         }
 
         .answer-btn::before {
             content: '';
             position: absolute;
-            top: 0;
-            right: 0;
-            width: 5px;
-            height: 100%;
-            background: linear-gradient(135deg, #ff9a56 0%, #ff6b6b 100%);
+            top: 0; right: 0;
+            width: 4px; height: 100%;
+            background: linear-gradient(180deg, var(--orange-primary), var(--orange-bright));
             transition: width 0.3s ease;
         }
 
         .answer-btn:hover {
-            transform: translateX(-5px);
-            border-color: #ff9a56;
-            box-shadow: 0 10px 30px rgba(255, 154, 86, 0.2);
+            border-color: var(--orange-primary);
+            background: rgba(255, 107, 53, 0.1);
+            transform: translateX(-4px);
         }
 
-        .answer-btn:hover::before {
-            width: 100%;
-            opacity: 0.1;
-        }
+        .answer-btn:hover::before { width: 100%; opacity: 0.1; }
 
         .answer-btn.correct {
-            background: linear-gradient(135deg, #48ff00 0%, #00ffd5 100%);
-            color: white;
-            border-color: #48ff00;
+            background: rgba(16, 185, 129, 0.2);
+            border-color: var(--success);
             animation: correctPulse 0.6s ease;
         }
 
+        .answer-btn.correct::before { background: var(--success); }
+
         .answer-btn.wrong {
-            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
-            color: white;
-            border-color: #ff6b6b;
+            background: rgba(239, 68, 68, 0.2);
+            border-color: var(--error);
             animation: wrongShake 0.5s ease;
         }
+
+        .answer-btn.wrong::before { background: var(--error); }
 
         .answer-btn.disabled {
             opacity: 0.5;
@@ -173,7 +221,7 @@
 
         @keyframes correctPulse {
             0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+            50% { transform: scale(1.02); }
         }
 
         @keyframes wrongShake {
@@ -184,64 +232,59 @@
 
         /* Feedback */
         .feedback {
-            margin-top: 25px;
+            margin-top: 20px;
             padding: 20px;
             border-radius: 12px;
             display: none;
             animation: fadeIn 0.4s ease;
         }
 
-        .feedback.show {
-            display: block;
-        }
+        .feedback.show { display: block; }
 
         .feedback.correct {
-            background: linear-gradient(135deg, rgba(72, 255, 0, 0.1) 0%, rgba(0, 255, 213, 0.1) 100%);
-            border: 2px solid #48ff00;
+            background: rgba(16, 185, 129, 0.15);
+            border: 2px solid var(--success);
         }
 
         .feedback.wrong {
-            background: linear-gradient(135deg, rgba(255, 107, 107, 0.1) 0%, rgba(238, 90, 111, 0.1) 100%);
-            border: 2px solid #ff6b6b;
+            background: rgba(239, 68, 68, 0.15);
+            border: 2px solid var(--error);
         }
 
-        .feedback-icon {
-            font-size: 1.5em;
-            margin-bottom: 10px;
-        }
+        .feedback-icon { font-size: 1.5rem; margin-bottom: 10px; }
 
         .feedback-title {
-            font-size: 1.3em;
+            font-size: 1.2rem;
             font-weight: 700;
-            margin-bottom: 15px;
-            color: #2d3748;
+            margin-bottom: 12px;
+            color: var(--text-primary);
         }
 
         .feedback-tip {
-            font-size: 1.05em;
+            font-size: 1rem;
             line-height: 1.7;
-            color: #2d3748;
+            color: var(--text-secondary);
             font-weight: 500;
-            background: rgba(255, 255, 255, 0.7);
+            background: rgba(255, 255, 255, 0.05);
             padding: 15px;
             border-radius: 8px;
-            margin-top: 10px;
         }
 
         /* Next Button */
         .next-btn {
             width: 100%;
-            padding: 18px;
-            background: linear-gradient(135deg, #ff9a56 0%, #ff6b6b 100%);
+            padding: 16px;
+            background: linear-gradient(135deg, var(--orange-primary), var(--orange-dark));
             color: white;
             border: none;
             border-radius: 12px;
-            font-size: 1.2em;
+            font-size: 1.1rem;
             font-weight: 700;
             cursor: pointer;
             margin-top: 20px;
             transition: all 0.3s ease;
             display: none;
+            font-family: 'Heebo', sans-serif;
         }
 
         .next-btn.show {
@@ -251,43 +294,28 @@
 
         .next-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.4);
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            box-shadow: 0 10px 30px var(--orange-glow);
         }
 
         /* Loading & Complete */
-        .loading, .complete {
+        .loading-screen, .complete-screen {
             text-align: center;
-            padding: 60px 30px;
+            padding: 60px 20px;
         }
 
         .spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(255, 154, 86, 0.2);
-            border-top: 4px solid #ff9a56;
+            width: 50px; height: 50px;
+            border: 4px solid var(--charcoal-lighter);
+            border-top: 4px solid var(--orange-primary);
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin: 0 auto 20px;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+        .loading-text { font-size: 1rem; color: var(--text-secondary); }
 
         .complete-icon {
-            font-size: 5em;
+            font-size: 4rem;
             margin-bottom: 20px;
             animation: bounceIn 0.6s ease;
         }
@@ -299,153 +327,199 @@
         }
 
         .complete-title {
-            font-size: 2em;
+            font-size: 2rem;
             font-weight: 700;
-            color: #2d3748;
+            color: var(--text-primary);
             margin-bottom: 15px;
         }
 
         .complete-stats {
-            font-size: 1.2em;
-            color: #4a5568;
+            font-size: 1.1rem;
+            color: var(--text-secondary);
             margin-bottom: 30px;
+            line-height: 1.8;
         }
+
+        .complete-stats strong { color: var(--orange-primary); }
+
+        .action-buttons { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
 
         .restart-btn, .home-btn {
-            padding: 15px 40px;
-            background: linear-gradient(135deg, #ff9a56 0%, #ff6b6b 100%);
-            color: white;
+            padding: 14px 30px;
             border: none;
             border-radius: 12px;
-            font-size: 1.1em;
+            font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            margin: 10px;
             transition: all 0.3s ease;
+            font-family: 'Heebo', sans-serif;
         }
 
-        .restart-btn:hover, .home-btn:hover {
+        .restart-btn {
+            background: linear-gradient(135deg, var(--orange-primary), var(--orange-dark));
+            color: white;
+        }
+
+        .restart-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.4);
+            box-shadow: 0 10px 30px var(--orange-glow);
         }
 
         .home-btn {
-            background: linear-gradient(135deg, #718096 0%, #4a5568 100%);
+            background: var(--charcoal-lighter);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-light);
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        .home-btn:hover {
+            background: var(--charcoal-light);
+            border-color: var(--orange-primary);
+            color: var(--orange-primary);
         }
 
-        /* Responsive - Mobile Optimized */
-        @media (max-width: 600px) {
-            body {
-                padding: 0;
-            }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-            .quiz-container {
-                border-radius: 0;
-                box-shadow: none;
-            }
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(26, 29, 35, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border-subtle);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 8px 0;
+            padding-bottom: calc(8px + env(safe-area-inset-bottom));
+            z-index: 1000;
+        }
 
-            .quiz-header {
-                padding: 20px 20px;
-            }
+        .bottom-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 12px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.7rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+            min-width: 60px;
+        }
 
-            .quiz-title {
-                font-size: 1.5em;
-            }
+        .bottom-nav-item i { font-size: 1.25rem; transition: all 0.3s ease; }
+        .bottom-nav-item.active { color: var(--orange-primary); }
+        .bottom-nav-item.active i { transform: scale(1.1); }
+        .bottom-nav-item.active::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 24px;
+            height: 3px;
+            background: var(--orange-primary);
+            border-radius: 0 0 3px 3px;
+        }
+        .bottom-nav-item:not(.active):hover { color: var(--text-secondary); }
+        .bottom-nav-item:not(.active):active { color: var(--orange-primary); transform: scale(0.95); }
 
-            .question-container {
-                padding: 25px 20px 100px 20px; /* Extra padding bottom for fixed button */
-            }
-
-            .question-text {
-                font-size: 1.1em;
-                margin-bottom: 20px;
-            }
-
-            .answer-btn {
-                padding: 14px 18px;
-                font-size: 0.95em;
-            }
-
-            .feedback {
-                margin-top: 20px;
-                padding: 15px;
-            }
-
-            .feedback-icon {
-                font-size: 1.2em;
-            }
-
-            .feedback-title {
-                font-size: 1.1em;
-            }
-
-            .feedback-tip {
-                font-size: 0.95em;
-                padding: 12px;
-            }
-
+        @media (max-width: 500px) {
+            .header { padding: 16px 20px; }
+            .page-title { font-size: 1.2rem; }
+            .header-logos img { height: 32px; }
+            .content { padding: 20px 16px 100px; }
+            .question-container { padding: 20px; }
+            .question-text { font-size: 1.1rem; }
+            .answer-btn { padding: 14px 16px; font-size: 0.95rem; }
             .next-btn {
                 position: fixed;
-                bottom: 0;
-                left: 0;
-                right: 0;
+                bottom: 0; left: 0; right: 0;
                 margin: 0;
                 border-radius: 0;
-                padding: 16px;
-                font-size: 1.1em;
                 z-index: 1000;
-                box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.2);
             }
         }
     </style>
 </head>
 <body>
-    <div class="quiz-container">
-        <!-- Header -->
-        <div class="quiz-header">
-            <h1 class="quiz-title">📚 מאגר שאלות</h1>
-            <div class="progress-container">
-                <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+    <div class="bg-image"></div>
+    <div class="bg-overlay"></div>
+    <div class="bg-vignette"></div>
+
+    <div class="main-container">
+        <header class="header">
+            <div class="header-right">
+                <button class="back-btn" onclick="goHome()">
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+                <h1 class="page-title">מאגר שאלות</h1>
             </div>
-            <div class="progress-text" id="progressText">שאלה 0 מתוך 0</div>
-        </div>
+            <div class="header-logos">
+                <img src="Assets/logo1.PNG" alt="Logo 1">
+                <img src="Assets/logo2.PNG" alt="Logo 2">
+            </div>
+        </header>
 
-        <!-- Loading -->
-        <div class="loading" id="loading">
-            <div class="spinner"></div>
-            <div>טוען שאלות...</div>
-        </div>
-
-        <!-- Question Container -->
-        <div class="question-container" id="questionContainer" style="display: none;">
-            <div class="question-number" id="questionNumber">שאלה 1</div>
-            <div class="question-text" id="questionText"></div>
-
-            <div class="answers-grid" id="answersGrid"></div>
-
-            <div class="feedback" id="feedback">
-                <div class="feedback-icon" id="feedbackIcon"></div>
-                <div class="feedback-title" id="feedbackTitle"></div>
-                <div class="feedback-tip" id="feedbackTip"></div>
+        <div class="content">
+            <!-- Loading -->
+            <div class="loading-screen" id="loading">
+                <div class="spinner"></div>
+                <div class="loading-text">טוען שאלות...</div>
             </div>
 
-            <button class="next-btn" id="nextBtn" onclick="nextQuestion()">
-                שאלה הבאה ←
-            </button>
-        </div>
+            <!-- Quiz Container -->
+            <div id="quizContainer" style="display: none;">
+                <div class="progress-section">
+                    <div class="progress-header">
+                        <span class="progress-title">התקדמות</span>
+                        <span class="progress-text" id="progressText">שאלה 0 מתוך 0</span>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+                    </div>
+                </div>
 
-        <!-- Complete Screen -->
-        <div class="complete" id="completeScreen" style="display: none;">
-            <div class="complete-icon">🎉</div>
-            <div class="complete-title">כל הכבוד!</div>
-            <div class="complete-stats" id="completeStats"></div>
-            <button class="restart-btn" onclick="restartQuiz()">התחל מחדש</button>
-            <button class="home-btn" onclick="goHome()">חזרה לתפריט</button>
+                <div class="question-container" id="questionContainer">
+                    <div class="question-number" id="questionNumber">שאלה 1</div>
+                    <div class="question-text" id="questionText"></div>
+
+                    <div class="answers-grid" id="answersGrid"></div>
+
+                    <div class="feedback" id="feedback">
+                        <div class="feedback-icon" id="feedbackIcon"></div>
+                        <div class="feedback-title" id="feedbackTitle"></div>
+                        <div class="feedback-tip" id="feedbackTip"></div>
+                    </div>
+
+                    <button class="next-btn" id="nextBtn" onclick="nextQuestion()">
+                        שאלה הבאה <i class="fas fa-arrow-left"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Complete Screen -->
+            <div class="complete-screen" id="completeScreen" style="display: none;">
+                <div class="complete-icon">🎉</div>
+                <div class="complete-title">כל הכבוד!</div>
+                <div class="complete-stats" id="completeStats"></div>
+                <div class="action-buttons">
+                    <button class="restart-btn" onclick="restartQuiz()">
+                        <i class="fas fa-redo"></i> התחל מחדש
+                    </button>
+                    <button class="home-btn" onclick="goHome()">
+                        <i class="fas fa-home"></i> חזרה לתפריט
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -457,49 +531,49 @@
         let correctCount = 0;
         let answered = false;
 
-        // Sound effects (Data URLs - very small)
         const correctSound = new Audio('data:audio/wav;base64,UklGRhQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=');
         const wrongSound = new Audio('data:audio/wav;base64,UklGRhQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=');
 
-        // Load questions
         async function loadQuestions() {
             try {
-                console.log('🔄 טוען שאלות...');
+                console.log('Loading questions...');
                 const response = await fetch(QUESTIONS_URL);
                 const data = await response.json();
 
                 if (!data.success) {
-                    throw new Error(data.error || 'שגיאה בטעינת שאלות');
+                    throw new Error(data.error || 'Error loading questions');
                 }
 
                 questions = data.questions.filter(q =>
                     q.question && q.answer1 && q.answer2 && q.answer3 && q.answer4 && q.correct
                 );
 
-                // Shuffle questions
+                // Debug: log first question to see all field names
+                if (data.questions.length > 0) {
+                    console.log('Available fields in question:', Object.keys(data.questions[0]));
+                    console.log('First question data:', data.questions[0]);
+                }
+
                 questions = shuffleArray(questions);
 
-                console.log(`✅ ${questions.length} שאלות נטענו`);
-                console.log('📋 דוגמה לשאלה:', questions[0]);
-
                 if (questions.length === 0) {
-                    throw new Error('לא נמצאו שאלות במערכת');
+                    throw new Error('No questions found');
                 }
 
                 startQuiz();
 
             } catch (error) {
-                console.error('❌ שגיאה:', error);
+                console.error('Error:', error);
                 document.getElementById('loading').innerHTML = `
-                    <div style="color: #ff6b6b; font-weight: 600;">
-                        ⚠️ שגיאה בטעינת שאלות<br>
-                        <small>${error.message}</small>
+                    <div style="color: var(--error); font-weight: 600;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 15px;"></i><br>
+                        שגיאה בטעינת שאלות<br>
+                        <small style="color: var(--text-muted);">${error.message}</small>
                     </div>
                 `;
             }
         }
 
-        // Shuffle array
         function shuffleArray(array) {
             const arr = [...array];
             for (let i = arr.length - 1; i > 0; i--) {
@@ -509,30 +583,25 @@
             return arr;
         }
 
-        // Start quiz
         function startQuiz() {
             document.getElementById('loading').style.display = 'none';
-            document.getElementById('questionContainer').style.display = 'block';
+            document.getElementById('quizContainer').style.display = 'block';
             showQuestion();
         }
 
-        // Show current question
         function showQuestion() {
             answered = false;
 
             const question = questions[currentQuestionIndex];
             const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
 
-            // Update progress
             document.getElementById('progressBar').style.width = progress + '%';
             document.getElementById('progressText').textContent =
                 `שאלה ${currentQuestionIndex + 1} מתוך ${questions.length}`;
 
-            // Update question
             document.getElementById('questionNumber').textContent = `שאלה ${currentQuestionIndex + 1}`;
             document.getElementById('questionText').textContent = question.question;
 
-            // Create answers
             const answersGrid = document.getElementById('answersGrid');
             answersGrid.innerHTML = '';
 
@@ -551,12 +620,10 @@
                 answersGrid.appendChild(btn);
             });
 
-            // Hide feedback and next button
-            document.getElementById('feedback').classList.remove('show');
+            document.getElementById('feedback').classList.remove('show', 'correct', 'wrong');
             document.getElementById('nextBtn').classList.remove('show');
         }
 
-        // Select answer
         function selectAnswer(selectedNum) {
             if (answered) return;
             answered = true;
@@ -565,10 +632,6 @@
             const correct = parseInt(question.correct);
             const isCorrect = selectedNum === correct;
 
-            console.log('🔍 שאלה נוכחית:', question);
-            console.log('💡 TIP:', question.TIP);
-
-            // Update buttons
             const buttons = document.querySelectorAll('.answer-btn');
             buttons.forEach((btn, index) => {
                 btn.classList.add('disabled');
@@ -579,7 +642,6 @@
                 }
             });
 
-            // Show feedback
             const feedback = document.getElementById('feedback');
             const feedbackIcon = document.getElementById('feedbackIcon');
             const feedbackTitle = document.getElementById('feedbackTitle');
@@ -589,38 +651,33 @@
             feedback.classList.add(isCorrect ? 'correct' : 'wrong');
             feedback.classList.add('show');
 
+            // Get tip - check multiple possible field names (including with trailing space)
+            const tipValue = question.TIP || question['TIP '] || question.tip || question.Tip || question.טיפ || '';
+            const tipText = tipValue.toString().trim();
+
             if (isCorrect) {
                 correctCount++;
                 feedbackIcon.textContent = '✅';
                 feedbackTitle.textContent = 'נכון מאוד!';
-                // Check if TIP exists and is not empty
-                const tip = question.TIP && question.TIP.toString().trim() !== '' ? question.TIP : 'תשובה מצוינת! המשך כך!';
-                feedbackTip.textContent = tip;
+                feedbackTip.textContent = tipText !== '' ? tipText : 'תשובה מצוינת! המשך כך!';
                 playSound(correctSound);
             } else {
                 feedbackIcon.textContent = '❌';
                 feedbackTitle.textContent = 'לא נכון';
-                // Check if TIP exists and is not empty
-                const tip = question.TIP && question.TIP.toString().trim() !== '' ? question.TIP : 'לא נורא! למד מהטעות והמשך קדימה.';
-                feedbackTip.textContent = tip;
+                feedbackTip.textContent = tipText !== '' ? tipText : 'לא נורא! למד מהטעות והמשך קדימה.';
                 playSound(wrongSound);
             }
 
-            // Show next button
             document.getElementById('nextBtn').classList.add('show');
         }
 
-        // Play sound
         function playSound(sound) {
             try {
                 sound.currentTime = 0;
-                sound.play().catch(e => console.log('Sound disabled'));
-            } catch (e) {
-                // Silent fail if sound blocked
-            }
+                sound.play().catch(e => {});
+            } catch (e) {}
         }
 
-        // Next question
         function nextQuestion() {
             currentQuestionIndex++;
 
@@ -631,35 +688,55 @@
             }
         }
 
-        // Show complete screen
         function showComplete() {
-            document.getElementById('questionContainer').style.display = 'none';
+            document.getElementById('quizContainer').style.display = 'none';
             document.getElementById('completeScreen').style.display = 'block';
 
             const percentage = Math.round((correctCount / questions.length) * 100);
             document.getElementById('completeStats').innerHTML = `
                 ענית נכון על <strong>${correctCount}</strong> מתוך <strong>${questions.length}</strong> שאלות<br>
-                <strong style="color: #ff9a56; font-size: 1.5em;">${percentage}%</strong>
+                <strong style="font-size: 1.8rem;">${percentage}%</strong>
             `;
         }
 
-        // Restart quiz
         function restartQuiz() {
             currentQuestionIndex = 0;
             correctCount = 0;
             questions = shuffleArray(questions);
             document.getElementById('completeScreen').style.display = 'none';
-            document.getElementById('questionContainer').style.display = 'block';
+            document.getElementById('quizContainer').style.display = 'block';
             showQuestion();
         }
 
-        // Go home
         function goHome() {
             window.location.href = 'exams.html';
         }
 
-        // Load on start
         window.addEventListener('load', loadQuestions);
     </script>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a href="index.html" class="bottom-nav-item">
+            <i class="fas fa-home"></i>
+            <span>בית</span>
+        </a>
+        <a href="lomdot2-page.html" class="bottom-nav-item">
+            <i class="fas fa-graduation-cap"></i>
+            <span>לומדות</span>
+        </a>
+        <a href="exams.html" class="bottom-nav-item active">
+            <i class="fas fa-file-alt"></i>
+            <span>בחנים</span>
+        </a>
+        <a href="safrot-page.html" class="bottom-nav-item">
+            <i class="fas fa-book"></i>
+            <span>ספרות</span>
+        </a>
+        <a href="lessons-learned.html" class="bottom-nav-item">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>לקחים</span>
+        </a>
+    </nav>
 </body>
 </html>
